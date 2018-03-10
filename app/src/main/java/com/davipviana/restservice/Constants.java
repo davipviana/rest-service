@@ -39,6 +39,6 @@ public class Constants {
     public static final String NOTE = "note";
     public static final String NAME = "name";
 
-    public static final String CONNECTION_MESSAGE = "No Internet Connection!"
+    public static final String CONNECTION_MESSAGE = "No Internet Connection!";
 
 }
