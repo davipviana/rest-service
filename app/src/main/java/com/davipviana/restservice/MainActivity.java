@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showProgress(boolean isShow) {
         findViewById(R.id.progress).setVisibility(isShow ? View.VISIBLE : View.GONE);
-        findViewById(R.id.info_form).setVisibility(isShow ? View.VISIBLE : View.GONE);
+        findViewById(R.id.info_form).setVisibility(isShow ? View.GONE : View.VISIBLE);
     }
 
     private void populateText() {
@@ -256,6 +256,11 @@ public class MainActivity extends AppCompatActivity {
     private class UserDeleteTask extends ActivityWebServiceTask {
         public UserDeleteTask() {
             super(userDeleteTask);
+        }
+
+        @Override
+        public void performSuccessfulOperation() {
+            showLoginScreen();
         }
 
         public boolean performRequest() {
