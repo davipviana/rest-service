@@ -1,5 +1,6 @@
 package com.davipviana.restservice;
 
+import android.content.ContentValues;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -7,6 +8,10 @@ import android.widget.EditText;
 
 import com.davipviana.restservice.data.User;
 import com.davipviana.restservice.webservices.WebServiceTask;
+import com.davipviana.restservice.webservices.WebServiceUtils;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -84,7 +89,37 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public boolean performRequest() {
-            return true;
+            ContentValues contentValues = new ContentValues();
+            User user = RESTServiceApplication.getInstance().getUser();
+            contentValues.put(Constants.ID, user.getId());
+            contentValues.put(Constants.ACCESS_TOKEN,
+                    RESTServiceApplication.getInstance().getAccessToken());
+
+            JSONObject object = WebServiceUtils.requestJSONObject(Constants.INFO_URL,
+                    WebServiceUtils.METHOD.GET, contentValues, null);
+
+            if(!hasError(object)) {
+                JSONArray jsonArray = object.optJSONArray(Constants.INFO);
+                JSONObject jsonObject = jsonArray.optJSONObject(0);
+                user.setName(jsonObject.optString(Constants.NAME));
+                if(user.getName().equalsIgnoreCase("null")) {
+                    user.setName(null);
+                }
+
+                user.setPhoneNumber(jsonObject.optString(Constants.PHONE_NUMBER));
+                if(user.getPhoneNumber().equalsIgnoreCase("null")) {
+                    user.setPhoneNumber(null);
+                }
+
+                user.setNote(jsonObject.optString(Constants.NOTE));
+                if(user.getNote().equalsIgnoreCase("null")) {
+                    user.setNote(null);
+                }
+
+                user.setId(jsonObject.optLong(Constants.ID_INFO));
+                return true;
+            }
+            return false;
         }
     }
 
@@ -94,7 +129,30 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public boolean performRequest() {
-            return true;
+            ContentValues contentValues = new ContentValues();
+            User user = RESTServiceApplication.getInstance().getUser();
+            contentValues.put(Constants.ID, user.getId());
+            contentValues.put(Constants.NAME, nameText.getText().toString());
+            contentValues.put(Constants.PASSWORD, passwordText.getText().toString());
+            contentValues.put(Constants.PHONE_NUMBER, phoneNumberText.getText().toString());
+            contentValues.put(Constants.NOTE, noteText.getText().toString());
+
+            ContentValues urlValues = new ContentValues();
+            urlValues.put(Constants.ACCESS_TOKEN, RESTServiceApplication.getInstance().getAccessToken());
+
+            JSONObject object = WebServiceUtils.requestJSONObject(Constants.UPDATE_URL,
+                    WebServiceUtils.METHOD.POST, urlValues, contentValues);
+
+            if(!hasError(object)) {
+                JSONArray jsonArray = object.optJSONArray(Constants.INFO);
+                JSONObject jsonObject = jsonArray.optJSONObject(0);
+                user.setName(jsonObject.optString(Constants.NAME));
+                user.setPhoneNumber(jsonObject.optString(Constants.PHONE_NUMBER));
+                user.setNote(jsonObject.optString(Constants.NOTE));
+                user.setPassword(jsonObject.optString(Constants.PASSWORD));
+                return true;
+            }
+            return false;
         }
     }
 
