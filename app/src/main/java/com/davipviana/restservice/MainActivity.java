@@ -162,7 +162,20 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public boolean performRequest() {
-            return true;
+            ContentValues contentValues = new ContentValues();
+            User user = RESTServiceApplication.getInstance().getUser();
+            contentValues.put(Constants.ID, user.getId());
+            contentValues.put(Constants.ACCESS_TOKEN,
+                    RESTServiceApplication.getInstance().getAccessToken());
+            JSONObject object = WebServiceUtils.requestJSONObject(Constants.RESET_URL,
+                    WebServiceUtils.METHOD.POST, contentValues, null);
+            if(!hasError(object)) {
+                user.setName("");
+                user.setPhoneNumber("");
+                user.setNote("");
+                return true;
+            }
+            return false;
         }
     }
 
@@ -172,7 +185,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public boolean performRequest() {
-            return true;
+            ContentValues contentValues = new ContentValues();
+            User user = RESTServiceApplication.getInstance().getUser();
+            contentValues.put(Constants.ID, user.getId());
+            contentValues.put(Constants.ACCESS_TOKEN,
+                    RESTServiceApplication.getInstance().getAccessToken());
+            JSONObject object = WebServiceUtils.requestJSONObject(Constants.DELETE_URL,
+                    WebServiceUtils.METHOD.DELETE, contentValues, null);
+
+            if(!hasError(object)) {
+                RESTServiceApplication.getInstance().setUser(null);
+                return true;
+            }
+            return false;
         }
     }
 }
